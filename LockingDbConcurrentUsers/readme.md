@@ -1,4 +1,12 @@
-This project is intended to showcase and demonstrate through code the use of database locking mechanism to control concurrent users’ requests to a queue-like assignment.  
+
+
+# Using Database locking 
+## To control concurrent assignment of tasks following a long running query
+
+https://github.com/eugen8/ProjectsAndHighlights/tree/master/LockingDbConcurrentUsers
+
+This is a presentation of the use of database locking mechanism to control concurrent users’ requests to a queue-like assignment. 
+
 It is inspired from one of my previous projects and a sample description could go like this: Multiple users processing bank loan applications can request to work on various tasks created by managers. Each work request pulls a loan that has the highest priority to be completed for that particular task. Only one user can have a particular loan within a particular task, so  let’s say user Oliver does Get Work for 3 loans on a task called “Verify user submitted bank account”, then he’ll get loans that match the criteria “bank statements submitted but not verified” and maybe the 3 loans with the oldest submission time will be assigned to Oliver. He will see the loans on his “pipeline” of work.  
 
 In our case the getWork for any of these tasks might be running a very heavy query against the database, which can take anywhere up to 30 seconds or even longer. As mentioned, one loan can be assigned to only one user per task, users can’t step on each other’s toes completing the same task for the same loan. Once the task is completed the user can disposition the loan with either: complete, return to queue after x time with x from 0 to 72 hours, or never return to queue. When the loan is completed or returned to queue after x time expired the loan can be picked up again if it still matches the criteria. So the getWork function should make sure the loan is not in someone’s queue OR if it’s been dispositioned earlier then return after x time expired.   
